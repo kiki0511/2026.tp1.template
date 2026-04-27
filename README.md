@@ -6,10 +6,10 @@
 ### Datos del Alumno
 
 | Campo | Respuesta |
-| :--- | :--- |
-| **Nombre** | |
-| **Apellido** | |
-| **Legajo** | |
+| :--- |:----------|
+| **Nombre** | Joaquin   |
+| **Apellido** | Tejada    |
+| **Legajo** | 64114     |
 
 > **Fecha de entrega:** 28 de Abril de 2026
 
