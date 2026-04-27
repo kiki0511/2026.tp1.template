@@ -6,10 +6,12 @@ import com.bibliotech.exception.SocioNoEncontradoException;
 import com.bibliotech.model.Prestamo;
 import com.bibliotech.model.Recurso;
 import com.bibliotech.model.Socio;
+import com.bibliotech.model.Transaccion;
 import com.bibliotech.repository.LibroRepository;
 import com.bibliotech.repository.SocioRepository;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,9 @@ public class PrestamoServiceImpl implements PrestamoService {
     private final LibroRepository libroRepository;
     private final SocioRepository socioRepository;
     private final List<Prestamo> prestamos = new ArrayList<>();
-    private int contadorId = 1;
+    private final List<Transaccion> historial = new ArrayList<>();
+    private int contadorPrestamo = 1;
+    private int contadorTransaccion = 1;
 
     public PrestamoServiceImpl(LibroRepository libroRepository, SocioRepository socioRepository) {
         this.libroRepository = libroRepository;
@@ -49,7 +53,7 @@ public class PrestamoServiceImpl implements PrestamoService {
         }
 
         Prestamo prestamo = new Prestamo(
-                contadorId++,
+                contadorPrestamo++,
                 recurso,
                 socio,
                 LocalDate.now(),
@@ -81,8 +85,16 @@ public class PrestamoServiceImpl implements PrestamoService {
         ));
 
         long diasRetraso = LocalDate.now().isAfter(prestamo.fechaDevolucionEsperada())
-                ? java.time.temporal.ChronoUnit.DAYS.between(prestamo.fechaDevolucionEsperada(), LocalDate.now())
+                ? ChronoUnit.DAYS.between(prestamo.fechaDevolucionEsperada(), LocalDate.now())
                 : 0;
+
+        Transaccion transaccion = new Transaccion(
+                contadorTransaccion++,
+                prestamo,
+                LocalDate.now(),
+                diasRetraso
+        );
+        historial.add(transaccion);
 
         if (diasRetraso > 0) {
             System.out.println("Devolución con " + diasRetraso + " días de retraso.");
@@ -93,5 +105,9 @@ public class PrestamoServiceImpl implements PrestamoService {
 
     public List<Prestamo> getHistorial() {
         return new ArrayList<>(prestamos);
+    }
+
+    public List<Transaccion> getTransacciones() {
+        return new ArrayList<>(historial);
     }
 }
